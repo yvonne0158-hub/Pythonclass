@@ -1,5 +1,7 @@
 import requests
+from requests import Response
 import pandas as pd
+from pandas import DataFrame
 from pathlib import Path
 
 
@@ -85,17 +87,20 @@ def export_to_pdf(df: pd.DataFrame, output_path: Path) -> None:
     print(f"PDF 已產生：{output_path}")
 
 def main():
-    url = "https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json"
+    #台北市 YouBike2.0的 web API網址
+    url : str = "https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json"
 
+    #使用 requests 套件裡面的 get 函式，執行後會傳出 Response 的實體
     response = requests.get(url)
 
-    if response.status_code == 200:
+    if response.status_code == 200: #使用 Response 裡的 Property 叫 status_code，如果取得的數字是 200 代表下載成功，如果不是則代表下載失敗
+
         data = response.json()
 
         # list[dict] -> DataFrame
         df = pd.DataFrame(data)
 
-        print(df.head())
+        print(df.tail(10)) #印出前 10 筆資料
 
         output_file = Path(__file__).with_name("youbike_report.pdf")
         export_to_pdf(df, output_file)
